@@ -13,7 +13,7 @@ export const SCENE_CONFIG = {
   camera: {
     fov: 55,
     near: 0.1,
-    far: 5000,
+    far: 20000,
     // Overview position
     defaultPosition: { x: 20, y: 40, z: 80 },
     defaultTarget: { x: 0, y: 0, z: 0 },
@@ -23,7 +23,7 @@ export const SCENE_CONFIG = {
   controls: {
     dampingFactor: 0.08,
     minDistance: 3,
-    maxDistance: 300,
+    maxDistance: 1500,
     autoRotateSpeed: 0.3,
     enablePan: true,
     panSpeed: 0.5,
@@ -40,7 +40,7 @@ export const SCENE_CONFIG = {
   // Starfield
   starfield: {
     count: 12000,
-    radius: 1500,
+    radius: 5000,
     layers: 3,
   },
 

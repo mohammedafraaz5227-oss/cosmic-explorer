@@ -322,7 +322,7 @@ const PLANETS = [
     emissive: 0x051a15,
     textureFile: '/textures/2k_neptune.jpg', // Reusing procedural generation base
     visualRadius: 1.8,
-    visualDistance: 95,
+    visualDistance: 300,
     axialTilt: 0.1,
     orbitalSpeed: 0.004,
     rotationSpeed: 0.02,
@@ -349,7 +349,7 @@ const PLANETS = [
     emissive: 0x1a120b,
     textureFile: '/textures/2k_venus_surface.jpg',
     visualRadius: 0.7,
-    visualDistance: 110,
+    visualDistance: 450,
     axialTilt: 0.0,
     orbitalSpeed: 0.003,
     rotationSpeed: 0.003, // tidally locked
@@ -376,7 +376,7 @@ const PLANETS = [
     emissive: 0x660000,
     textureFile: '/textures/2k_mars.jpg',
     visualRadius: 1.4,
-    visualDistance: 125,
+    visualDistance: 600,
     axialTilt: 0.0,
     orbitalSpeed: 0.002,
     rotationSpeed: 0.01,

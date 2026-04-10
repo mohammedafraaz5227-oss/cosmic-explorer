@@ -45,7 +45,15 @@ export class CameraController {
       targetPos.z + offset
     );
 
-    const { duration, ease } = SCENE_CONFIG.flyTo;
+    // Calculate dynamic duration based on travel distance to emphasize scale!
+    // Near planets will take ~2 seconds, distant exoplanets will take up to ~8 seconds.
+    const travelDistance = this.camera.position.distanceTo(cameraTarget);
+    let { duration, ease } = SCENE_CONFIG.flyTo;
+    
+    // Add 1 second of travel time for every 80 units of distance, up to a max of 8 seconds total.
+    if (travelDistance > 50) {
+      duration += Math.min(6.0, (travelDistance - 50) * 0.0125);
+    }
 
     this.currentTimeline = gsap.timeline({
       onComplete: () => {
