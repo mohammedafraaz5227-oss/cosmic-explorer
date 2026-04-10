@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Cosmic Explorer — Interactive 3D Solar System with AI Astronomy Assistant" />
+  <title>Cosmic Explorer — 3D Solar System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <!-- ═══════════ LOADING SCREEN ═══════════ -->
+  <div id="loading-screen">
+    <div class="loader-content">
+      <div class="loader-ring"></div>
+      <h1 class="loader-title">COSMIC EXPLORER</h1>
+      <p class="loader-subtitle">Initializing Solar System</p>
+      <div class="loader-bar-track">
+        <div class="loader-bar-fill" id="loader-progress"></div>
+      </div>
+      <p class="loader-percent" id="loader-percent">0%</p>
+    </div>
+  </div>
+
+  <!-- ═══════════ THREE.JS CANVAS ═══════════ -->
+  <div id="canvas-container"></div>
+
+  <!-- ═══════════ HUD OVERLAY ═══════════ -->
+  <div id="hud">
+    <!-- Top Bar -->
+    <div class="hud-top">
+      <div class="hud-logo">
+        <span class="hud-logo-icon">◉</span>
+        <span class="hud-logo-text">COSMIC EXPLORER</span>
+      </div>
+      <div class="hud-status">
+        <span class="hud-dot"></span>
+        <span id="hud-fps">60 FPS</span>
+        <span class="hud-divider">|</span>
+        <span id="hud-objects">— objects</span>
+      </div>
+    </div>
+
+    <!-- Bottom Controls Hint -->
+    <div class="hud-bottom">
+      <div class="hud-controls">
+        <span>🖱️ Drag to rotate</span>
+        <span>⚙️ Scroll to zoom</span>
+        <span>🎯 Click a planet</span>
+      </div>
+    </div>
+
+    <!-- Planet Labels (dynamically populated) -->
+    <div id="planet-labels"></div>
+  </div>
+
+  <!-- ═══════════ PLANET INFO PANEL ═══════════ -->
+  <div id="planet-panel" class="glass-panel hidden">
+    <button id="planet-panel-close" class="panel-close" aria-label="Close panel">✕</button>
+    <div class="panel-header">
+      <div class="panel-planet-icon" id="planet-icon"></div>
+      <h2 id="planet-name">—</h2>
+    </div>
+    <div class="panel-grid">
+      <div class="panel-stat">
+        <span class="stat-label">RADIUS</span>
+        <span class="stat-value" id="stat-radius">—</span>
+      </div>
+      <div class="panel-stat">
+        <span class="stat-label">DISTANCE</span>
+        <span class="stat-value" id="stat-distance">—</span>
+      </div>
+      <div class="panel-stat">
+        <span class="stat-label">ORBITAL PERIOD</span>
+        <span class="stat-value" id="stat-orbital">—</span>
+      </div>
+      <div class="panel-stat">
+        <span class="stat-label">ROTATION</span>
+        <span class="stat-value" id="stat-rotation">—</span>
+      </div>
+      <div class="panel-stat">
+        <span class="stat-label">GRAVITY</span>
+        <span class="stat-value" id="stat-gravity">—</span>
+      </div>
+      <div class="panel-stat">
+        <span class="stat-label">TEMPERATURE</span>
+        <span class="stat-value" id="stat-temp">—</span>
+      </div>
+      <div class="panel-stat full-width">
+        <span class="stat-label">ATMOSPHERE</span>
+        <span class="stat-value" id="stat-atmosphere">—</span>
+      </div>
+      <div class="panel-stat">
+        <span class="stat-label">MOONS</span>
+        <span class="stat-value" id="stat-moons">—</span>
+      </div>
+    </div>
+    <button id="ask-ai-btn" class="btn-neon">
+      <span class="btn-icon">🤖</span> Ask AI About This Planet
+    </button>
+  </div>
+
+  <!-- ═══════════ AI CHAT PANEL ═══════════ -->
+  <div id="ai-panel" class="glass-panel hidden">
+    <button id="ai-panel-close" class="panel-close" aria-label="Close AI panel">✕</button>
+    <div class="ai-header">
+      <span class="ai-avatar">🛸</span>
+      <div>
+        <h2>Space AI Assistant</h2>
+        <p class="ai-status">Powered by OpenAI</p>
+      </div>
+    </div>
+    <div id="ai-messages" class="ai-messages">
+      <div class="ai-msg bot">
+        <span class="msg-avatar">🤖</span>
+        <div class="msg-bubble">Welcome, Explorer! Ask me anything about our solar system, astronomy, or space science.</div>
+      </div>
+    </div>
+    <div class="ai-suggestions" id="ai-suggestions">
+      <button class="suggestion-btn" data-q="Why is Mars red?">Why is Mars red?</button>
+      <button class="suggestion-btn" data-q="Could humans live on Europa?">Life on Europa?</button>
+      <button class="suggestion-btn" data-q="Why does Saturn have rings?">Saturn's rings?</button>
+      <button class="suggestion-btn" data-q="Which planet is the hottest?">Hottest planet?</button>
+    </div>
+    <form id="ai-form" class="ai-input-bar">
+      <input type="text" id="ai-input" placeholder="Ask about the cosmos..." autocomplete="off" />
+      <button type="submit" id="ai-send" class="btn-send" aria-label="Send message">➤</button>
+    </form>
+  </div>
+
+  <!-- ═══════════ FLOATING BUTTONS ═══════════ -->
+  <button id="ai-toggle" class="fab" aria-label="Toggle AI assistant">
+    <span>🤖</span>
+  </button>
+  <button id="ar-toggle" class="fab fab-ar hidden" aria-label="View in AR">
+    <span>📱</span>
+  </button>
+  <button id="reset-camera" class="fab fab-reset" aria-label="Reset camera">
+    <span>🏠</span>
+  </button>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
