@@ -59,7 +59,16 @@ export class SceneSetup {
     this.controls.zoomSpeed = c.zoomSpeed;
     
     // Add WASD keys for panning
-    this.controls.listenToKeyEvents(window);
+    // Scope WASD key panning to the canvas only, so it doesn't break chat text inputs
+    this.renderer.domElement.setAttribute('tabindex', '0');
+    this.controls.listenToKeyEvents(this.renderer.domElement);
+    
+    // Automatically give the 3D scene focus when clicking anywhere outside the chat
+    window.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+        this.renderer.domElement.focus();
+      }
+    });
     this.controls.keys = {
       LEFT: 'KeyA',
       UP: 'KeyW',
