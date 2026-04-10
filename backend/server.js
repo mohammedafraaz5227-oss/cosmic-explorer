@@ -38,9 +38,12 @@ function checkRateLimit(ip) {
 }
 
 // ── AI client (Groq via OpenAI SDK) ──
+// Pass a placeholder key when GROQ_API_KEY is unset so the SDK doesn't
+// throw at construction time. The /ask-space-ai handler checks for the
+// real key at runtime and returns a friendly message if it's missing.
 const openai = new OpenAI({
   baseURL: 'https://api.groq.com/openai/v1',
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.GROQ_API_KEY || 'placeholder-key-not-configured',
 });
 
 const SYSTEM_PROMPT = `You are "Cosmic AI", an expert astronomer and space science educator embedded in the Cosmic Explorer 3D solar system application.

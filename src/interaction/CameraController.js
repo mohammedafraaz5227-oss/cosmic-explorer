@@ -97,6 +97,7 @@ export class CameraController {
     }, 0);
 
     this.isAnimating = true;
+  }
 
   /**
    * Reset camera to default overview position.
