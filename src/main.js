@@ -79,7 +79,7 @@ class CosmicExplorer {
     this.aiChat = new AIChat();
 
     // ── Webcam AR ──
-    this.webcamAR = new WebcamAR(renderer, scene, camera, this.starfield);
+    this.webcamAR = new WebcamAR(renderer, scene, camera, this.starfield, controls);
 
     // ── Reset camera button ──
     document.getElementById('reset-camera').addEventListener('click', () => {

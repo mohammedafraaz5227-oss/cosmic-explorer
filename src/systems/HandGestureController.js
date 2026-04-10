@@ -51,9 +51,10 @@ export class HandGestureController {
    * @param {HTMLVideoElement} videoElement — the webcam <video>
    * @param {Function} onZoom — callback: (scaleDelta: number) => void
    */
-  constructor(videoElement, onZoom) {
+  constructor(videoElement, onZoom, onRotate) {
     this.video = videoElement;
     this.onZoom = onZoom;
+    this.onRotate = onRotate;
     this.handLandmarker = null;
     this.isRunning = false;
     this.lastTimestamp = -1;
@@ -64,6 +65,10 @@ export class HandGestureController {
     this.smoothedDist = null;
     this.smoothedY = null;
     this.stableFrames = 0;
+
+    // Palm / Rotate state
+    this.prevOpenX = null;
+    this.prevOpenY = null;
 
     // Overlay canvas
     this.canvas = null;
@@ -116,6 +121,8 @@ export class HandGestureController {
     this.prevPinchY = null;
     this.isPinching = false;
     this.stableFrames = 0;
+    this.prevOpenX = null;
+    this.prevOpenY = null;
     if (this.canvas) { this.canvas.remove(); this.canvas = null; }
     if (this.gestureIndicator) { this.gestureIndicator.remove(); this.gestureIndicator = null; }
     console.log('Hand gesture detection stopped');
@@ -150,6 +157,8 @@ export class HandGestureController {
       this.prevPinchY = null;
       this.isPinching = false;
       this.stableFrames = 0;
+      this.prevOpenX = null;
+      this.prevOpenY = null;
       this._updateGestureIndicator(null);
       return;
     }
@@ -188,6 +197,8 @@ export class HandGestureController {
       if (this.stableFrames >= GESTURE_CONFIG.minDetectionFrames) {
         this.isPinching = true;
         this.prevPinchY = posY;
+        this.prevOpenX = null;
+        this.prevOpenY = null;
         this._updateGestureIndicator('pinch');
       }
     } else if (this.isPinching) {
@@ -196,6 +207,8 @@ export class HandGestureController {
         this.isPinching = false;
         this.prevPinchY = null;
         this.stableFrames = 0;
+        this.prevOpenX = null;
+        this.prevOpenY = null;
         this._updateGestureIndicator('open');
       } else {
         // Active pinch — Calculate vertical drag delta to zoom!
@@ -210,6 +223,26 @@ export class HandGestureController {
     } else {
       this.stableFrames = 0;
       this._updateGestureIndicator('open');
+
+      // ── Palm rotation detection ──
+      const handCenterX = landmarks[0].x; // Wrist is 0
+      const handCenterY = landmarks[0].y;
+      
+      if (this.prevOpenX !== null && this.prevOpenY !== null) {
+        const dx = handCenterX - this.prevOpenX;
+        const dy = handCenterY - this.prevOpenY;
+        
+        // Threshold to avoid micro-jitter while resting hand
+        if (Math.abs(dx) > 0.003 || Math.abs(dy) > 0.003) {
+          if (this.onRotate) {
+             // Multiplied by canvas dims to act like pixel panning
+             // dx is inverted because webcam mirrors the user
+            this.onRotate(-dx * this.canvas.width * 2.0, dy * this.canvas.height * 2.0);
+          }
+        }
+      }
+      this.prevOpenX = handCenterX;
+      this.prevOpenY = handCenterY;
     }
   }
 
@@ -357,15 +390,15 @@ export class HandGestureController {
     if (!this.gestureIndicator) return;
 
     if (state === 'pinch') {
-      this.gestureIndicator.textContent = '🤏 PINCH & DRAG UP/DOWN TO ZOOM';
+      this.gestureIndicator.textContent = '🤏 PINCH & DRAG TO ZOOM';
       this.gestureIndicator.style.color = '#ffc800';
       this.gestureIndicator.style.borderColor = 'rgba(255, 200, 0, 0.5)';
       this.gestureIndicator.style.opacity = '1';
     } else if (state === 'open') {
-      this.gestureIndicator.textContent = '✋ HAND DETECTED';
+      this.gestureIndicator.textContent = '✋ DRAG PALM TO PAN AROUND';
       this.gestureIndicator.style.color = '#00ffdc';
       this.gestureIndicator.style.borderColor = 'rgba(0, 255, 220, 0.3)';
-      this.gestureIndicator.style.opacity = '0.7';
+      this.gestureIndicator.style.opacity = '0.8';
     } else {
       this.gestureIndicator.style.opacity = '0';
     }

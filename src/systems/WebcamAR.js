@@ -30,11 +30,12 @@ export class WebcamAR {
    * @param {THREE.Camera} camera
    * @param {Object} starfield — Starfield instance (layers hidden in AR)
    */
-  constructor(renderer, scene, camera, starfield) {
+  constructor(renderer, scene, camera, starfield, controls) {
     this.renderer = renderer;
     this.scene = scene;
     this.camera = camera;
     this.starfield = starfield;
+    this.controls = controls;
 
     this.isActive = false;
     this.video = null;
@@ -190,7 +191,8 @@ export class WebcamAR {
 
     this.handGesture = new HandGestureController(
       this.video,
-      (delta) => this._applyZoom(delta)
+      (delta) => this._applyZoom(delta),
+      (dx, dy) => this._applyRotation(dx, dy)
     );
 
     await this.handGesture.init();
@@ -207,6 +209,27 @@ export class WebcamAR {
       AR_CONFIG.maxScale
     );
     this.scene.scale.setScalar(this.currentScale);
+  }
+
+  _applyRotation(dx, dy) {
+    if (!this.controls) return;
+    const speed = 0.005;
+    
+    // Convert current camera position to spherical coordinates relative to the target
+    const cartesian = this.camera.position.clone().sub(this.controls.target);
+    const spherical = new THREE.Spherical().setFromVector3(cartesian);
+    
+    // Apply deltas
+    spherical.theta -= dx * speed;
+    spherical.phi -= dy * speed;
+    
+    // Prevent the camera from doing a backflip over the poles
+    spherical.phi = Math.max(0.01, Math.min(Math.PI - 0.01, spherical.phi));
+    
+    // Back to cartesian
+    this.camera.position.setFromSpherical(spherical).add(this.controls.target);
+    this.camera.lookAt(this.controls.target);
+    this.controls.update();
   }
 
   // ─────────────────── touch & scroll gestures ───────────────────

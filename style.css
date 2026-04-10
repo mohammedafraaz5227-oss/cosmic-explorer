@@ -138,6 +138,8 @@ body {
   align-items: center;
   padding: 2rem;
   pointer-events: none;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .top-controls-container {
@@ -151,6 +153,7 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .hud-logo-icon {
@@ -178,6 +181,8 @@ body {
   padding: 0.5rem 1rem;
   border: 1px solid var(--color-hud-border);
   border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .hud-dot {
@@ -538,6 +543,7 @@ body {
   z-index: 20;
   transition: var(--transition-smooth);
   pointer-events: auto;
+  flex-shrink: 0;
 }
 
 .fab:hover {
@@ -553,18 +559,19 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
 
 /* ═══════════ MOBILE RESPONSIVENESS ═══════════ */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .hud-top {
     flex-direction: column;
     padding: 1rem;
-    gap: 1rem;
+    gap: 1.5rem;
     align-items: center;
+    justify-content: center;
   }
   .hud-status {
     display: none; /* Hide FPS on small screens to save space */
   }
   .top-controls-container {
-    gap: 0.8rem;
+    gap: 1rem;
     width: 100%;
     justify-content: center;
   }
@@ -574,7 +581,7 @@ body {
     font-size: 1.2rem;
   }
   .hud-logo-text {
-    font-size: 1rem;
+    font-size: 1.1rem;
     letter-spacing: 2px;
   }
 }
