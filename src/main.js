@@ -126,6 +126,9 @@ class CosmicExplorer {
     this.sun.update(this.elapsed, delta);
     this.planetFactory.update(this.elapsed, delta);
     this.asteroidBelt.update(delta);
+    
+    // Smooth camera tracking
+    this.cameraController.update();
 
     // Update UI
     this.ui.updateLabels();

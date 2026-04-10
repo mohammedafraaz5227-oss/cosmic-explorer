@@ -15,6 +15,44 @@ export class CameraController {
     this.controls = controls;
     this.isAnimating = false;
     this.currentTimeline = null;
+    this.trackingMesh = null;
+    this.lerpProgress = { value: 0 };
+    this.startCamPos = new THREE.Vector3();
+    this.startTargetPos = new THREE.Vector3();
+  }
+
+  /**
+   * Called every frame from main loop
+   */
+  update() {
+    if (this.trackingMesh && !this.isAnimating) {
+      // Once arrived, permanently track the moving planet
+      const currentPos = new THREE.Vector3();
+      this.trackingMesh.getWorldPosition(currentPos);
+      this.controls.target.copy(currentPos);
+      this.controls.update();
+
+      // We don't lock camera position, user can still rotate around it,
+      // orbit controls naturally handles the camera moving if the target moves!
+    } else if (this.isAnimating && this.trackingMesh && this.lerpProgress.value < 1) {
+      // During flight, dynamically lerp to the moving destination
+      const idealTarget = new THREE.Vector3();
+      this.trackingMesh.getWorldPosition(idealTarget);
+      
+      const planetData = this.trackingMesh.userData.planetData;
+      const radius = planetData?.visualRadius || 1;
+      const offsetMultiplier = SCENE_CONFIG.flyTo.offsetMultiplier;
+      
+      const idealCamPos = new THREE.Vector3(
+        idealTarget.x + radius * offsetMultiplier * 0.5,
+        idealTarget.y + radius * offsetMultiplier * 0.4,
+        idealTarget.z + radius * offsetMultiplier
+      );
+
+      this.camera.position.lerpVectors(this.startCamPos, idealCamPos, this.lerpProgress.value);
+      this.controls.target.lerpVectors(this.startTargetPos, idealTarget, this.lerpProgress.value);
+      this.controls.update();
+    }
   }
 
   /**
@@ -27,30 +65,18 @@ export class CameraController {
       this.currentTimeline?.kill();
     }
 
-    this.isAnimating = true;
+    this.trackingMesh = mesh;
+    this.startCamPos.copy(this.camera.position);
+    this.startTargetPos.copy(this.controls.target);
+    this.lerpProgress.value = 0;
 
-    // Get the world position of the planet
+    // Get initial distance to scale duration
     const targetPos = new THREE.Vector3();
     mesh.getWorldPosition(targetPos);
-
-    // Calculate camera offset based on planet size
-    const planetData = mesh.userData.planetData;
-    const radius = planetData?.visualRadius || 1;
-    const offset = radius * SCENE_CONFIG.flyTo.offsetMultiplier;
-
-    // Position camera at an angle above and to the side
-    const cameraTarget = new THREE.Vector3(
-      targetPos.x + offset * 0.5,
-      targetPos.y + offset * 0.4,
-      targetPos.z + offset
-    );
-
-    // Calculate dynamic duration based on travel distance to emphasize scale!
-    // Near planets will take ~2 seconds, distant exoplanets will take up to ~8 seconds.
-    const travelDistance = this.camera.position.distanceTo(cameraTarget);
+    const travelDistance = this.camera.position.distanceTo(targetPos);
+    
     let { duration, ease } = SCENE_CONFIG.flyTo;
     
-    // Add 1 second of travel time for every 80 units of distance, up to a max of 8 seconds total.
     if (travelDistance > 50) {
       duration += Math.min(6.0, (travelDistance - 50) * 0.0125);
     }
@@ -58,31 +84,19 @@ export class CameraController {
     this.currentTimeline = gsap.timeline({
       onComplete: () => {
         this.isAnimating = false;
+        this.lerpProgress.value = 1; // ensure we finish tracking cleanly
         onComplete?.();
       },
     });
 
-    // Animate camera position
-    this.currentTimeline.to(this.camera.position, {
-      x: cameraTarget.x,
-      y: cameraTarget.y,
-      z: cameraTarget.z,
+    // Tween the progress value instead of fixed coordinates
+    this.currentTimeline.to(this.lerpProgress, {
+      value: 1,
       duration,
       ease,
     }, 0);
 
-    // Animate orbit controls target (what camera looks at)
-    this.currentTimeline.to(this.controls.target, {
-      x: targetPos.x,
-      y: targetPos.y,
-      z: targetPos.z,
-      duration,
-      ease,
-      onUpdate: () => {
-        this.controls.update();
-      },
-    }, 0);
-  }
+    this.isAnimating = true;
 
   /**
    * Reset camera to default overview position.
@@ -94,6 +108,7 @@ export class CameraController {
     }
 
     this.isAnimating = true;
+    this.trackingMesh = null; // stop tracking moving objects
 
     const { defaultPosition, defaultTarget } = SCENE_CONFIG.camera;
     const { duration, ease } = SCENE_CONFIG.flyTo;

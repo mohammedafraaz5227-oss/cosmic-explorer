@@ -177,7 +177,14 @@ export class AIChat {
 
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
-    bubble.textContent = text;
+    
+    // Basic Markdown Parser for bold and newlines
+    const formattedText = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g, '<br>');
+      
+    bubble.innerHTML = formattedText;
 
     msgDiv.appendChild(avatar);
     msgDiv.appendChild(bubble);
