@@ -13,6 +13,7 @@ export class Sun {
     this.group = new THREE.Group();
     this.group.userData = { name: 'Sun', type: 'star', planetData: SUN_DATA };
     this.time = 0;
+    this.textureLoader = new THREE.TextureLoader();
 
     this._createSunMesh();
     this._createCorona();
@@ -24,40 +25,46 @@ export class Sun {
   _createSunMesh() {
     const geometry = new THREE.SphereGeometry(SUN_DATA.visualRadius, 64, 64);
 
-    // Procedural sun texture via canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext('2d');
+    let texture = null;
+    if (SUN_DATA.textureFile) {
+        texture = this.textureLoader.load(SUN_DATA.textureFile);
+        texture.colorSpace = THREE.SRGBColorSpace;
+    } else {
+        // Fallback Procedural sun texture via canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
 
-    // Base gradient
-    const grad = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
-    grad.addColorStop(0, '#fff8e0');
-    grad.addColorStop(0.3, '#ffcc33');
-    grad.addColorStop(0.6, '#ff9900');
-    grad.addColorStop(0.85, '#ff6600');
-    grad.addColorStop(1, '#cc3300');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 512, 512);
+        // Base gradient
+        const grad = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+        grad.addColorStop(0, '#fff8e0');
+        grad.addColorStop(0.3, '#ffcc33');
+        grad.addColorStop(0.6, '#ff9900');
+        grad.addColorStop(0.85, '#ff6600');
+        grad.addColorStop(1, '#cc3300');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 512);
 
-    // Add noise-like granulation
-    for (let i = 0; i < 5000; i++) {
-      const x = Math.random() * 512;
-      const y = Math.random() * 512;
-      const r = Math.random() * 3;
-      const alpha = Math.random() * 0.3;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 200, 50, ${alpha})`;
-      ctx.fill();
+        // Add noise-like granulation
+        for (let i = 0; i < 5000; i++) {
+          const x = Math.random() * 512;
+          const y = Math.random() * 512;
+          const r = Math.random() * 3;
+          const alpha = Math.random() * 0.3;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 200, 50, ${alpha})`;
+          ctx.fill();
+        }
+
+        texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
     }
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
 
     const material = new THREE.MeshBasicMaterial({
       map: texture,
-      color: 0xffdd44,
+      color: texture ? 0xffffff : 0xffdd44,
     });
 
     this.mesh = new THREE.Mesh(geometry, material);

@@ -57,20 +57,34 @@ export class SceneSetup {
     this.controls.panSpeed = c.panSpeed;
     this.controls.rotateSpeed = c.rotateSpeed;
     this.controls.zoomSpeed = c.zoomSpeed;
+    
+    // Add WASD keys for panning
+    this.controls.listenToKeyEvents(window);
+    this.controls.keys = {
+      LEFT: 'KeyA',
+      UP: 'KeyW',
+      RIGHT: 'KeyD',
+      BOTTOM: 'KeyS'
+    };
+    this.controls.keyPanSpeed = 15.0;
 
     // ── Lighting ──
-    // Ambient — very dim fill
-    this.ambientLight = new THREE.AmbientLight(0x111122, 0.3);
+    // Ambient — brighter for better visibility of dark sides
+    this.ambientLight = new THREE.AmbientLight(0x2a3040, 1.2);
     this.scene.add(this.ambientLight);
 
-    // Sun point light — main illumination
-    this.sunLight = new THREE.PointLight(0xfff5e0, 2.5, 0, 0.5);
+    // Hemisphere light - adds a nice color gradient to planets based on "up" vs "down"
+    this.hemiLight = new THREE.HemisphereLight(0xe6f0ff, 0x080820, 1.0);
+    this.scene.add(this.hemiLight);
+
+    // Sun point light — main illumination from the center
+    this.sunLight = new THREE.PointLight(0xfffff0, 3.5, 0, 0.5);
     this.sunLight.position.set(0, 0, 0);
     this.scene.add(this.sunLight);
 
-    // Secondary fill — subtle top light for depth
-    this.fillLight = new THREE.DirectionalLight(0x334466, 0.15);
-    this.fillLight.position.set(0, 50, 0);
+    // Secondary fill — subtle top/side light for depth modeling
+    this.fillLight = new THREE.DirectionalLight(0x556688, 0.8);
+    this.fillLight.position.set(30, 50, 30);
     this.scene.add(this.fillLight);
 
     // ── Resize handler ──

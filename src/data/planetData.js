@@ -12,6 +12,7 @@ const PLANETS = [
     type: 'planet',
     color: 0xb5a7a7,
     emissive: 0x1a1a1a,
+    textureFile: '/textures/2k_mercury.jpg',
     visualRadius: 0.38,
     visualDistance: 8,
     axialTilt: 0.034,           // radians
@@ -39,6 +40,8 @@ const PLANETS = [
     type: 'planet',
     color: 0xe8cda0,
     emissive: 0x2a200a,
+    textureFile: '/textures/2k_venus_surface.jpg',
+    atmosphereTexture: '/textures/2k_venus_atmosphere.jpg',
     visualRadius: 0.72,
     visualDistance: 12,
     axialTilt: 3.096,           // ~177° (retrograde)
@@ -65,6 +68,8 @@ const PLANETS = [
     type: 'planet',
     color: 0x4a90d9,
     emissive: 0x0a1a2f,
+    textureFile: '/textures/2k_earth_daymap.jpg',
+    atmosphereTexture: '/textures/2k_earth_clouds.jpg',
     visualRadius: 0.75,
     visualDistance: 16,
     axialTilt: 0.409,
@@ -77,6 +82,7 @@ const PLANETS = [
       {
         name: 'Moon',
         color: 0xcccccc,
+        textureFile: '/textures/2k_moon.jpg',
         visualRadius: 0.2,
         orbitRadius: 1.8,
         orbitalSpeed: 5.0,
@@ -100,6 +106,7 @@ const PLANETS = [
     type: 'planet',
     color: 0xc1440e,
     emissive: 0x2a0a00,
+    textureFile: '/textures/2k_mars.jpg',
     visualRadius: 0.53,
     visualDistance: 21,
     axialTilt: 0.44,
@@ -143,6 +150,7 @@ const PLANETS = [
     type: 'planet',
     color: 0xd4a574,
     emissive: 0x1a0e05,
+    textureFile: '/textures/2k_jupiter.jpg',
     visualRadius: 2.5,
     visualDistance: 34,
     axialTilt: 0.054,
@@ -202,6 +210,7 @@ const PLANETS = [
     type: 'planet',
     color: 0xead6a6,
     emissive: 0x1a1505,
+    textureFile: '/textures/2k_saturn.jpg',
     visualRadius: 2.1,
     visualDistance: 48,
     axialTilt: 0.466,
@@ -213,6 +222,7 @@ const PLANETS = [
     ringInnerRadius: 2.8,
     ringOuterRadius: 4.8,
     ringColor: 0xc8b080,
+    ringTexture: '/textures/2k_saturn_ring_alpha.png',
     moons: [
       {
         name: 'Titan',
@@ -256,6 +266,7 @@ const PLANETS = [
     type: 'planet',
     color: 0x73c2d4,
     emissive: 0x0a1a1f,
+    textureFile: '/textures/2k_uranus.jpg',
     visualRadius: 1.4,
     visualDistance: 62,
     axialTilt: 1.706,           // ~97.8° — rolls on its side!
@@ -282,6 +293,7 @@ const PLANETS = [
     type: 'planet',
     color: 0x3f54ba,
     emissive: 0x0a0a2f,
+    textureFile: '/textures/2k_neptune.jpg',
     visualRadius: 1.3,
     visualDistance: 76,
     axialTilt: 0.494,
@@ -313,6 +325,7 @@ const SUN_DATA = {
   type: 'star',
   color: 0xffdd44,
   emissiveColor: 0xffaa00,
+  textureFile: '/textures/2k_sun.jpg',
   visualRadius: 4.0,
   data: {
     radius: '696,340 km',
