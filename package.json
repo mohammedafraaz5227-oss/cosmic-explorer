@@ -9,8 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "^0.170.0",
-    "gsap": "^3.12.7"
+    "@mediapipe/tasks-vision": "^0.10.34",
+    "gsap": "^3.12.7",
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "vite": "^6.0.0"

@@ -36,11 +36,22 @@
         <span class="hud-logo-icon">◉</span>
         <span class="hud-logo-text">COSMIC EXPLORER</span>
       </div>
-      <div class="hud-status">
-        <span class="hud-dot"></span>
-        <span id="hud-fps">60 FPS</span>
-        <span class="hud-divider">|</span>
-        <span id="hud-objects">— objects</span>
+      <div class="top-controls-container">
+        <div class="hud-status">
+          <span class="hud-dot"></span>
+          <span id="hud-fps">60 FPS</span>
+          <span class="hud-divider">|</span>
+          <span id="hud-objects">— objects</span>
+        </div>
+        <button id="ai-toggle" class="fab" aria-label="Toggle AI assistant">
+          <span>🤖</span>
+        </button>
+        <button id="ar-toggle" class="fab fab-ar hidden" aria-label="View in AR">
+          <span>📱</span>
+        </button>
+        <button id="reset-camera" class="fab fab-reset" aria-label="Reset camera">
+          <span>🏠</span>
+        </button>
       </div>
     </div>
 
@@ -132,16 +143,7 @@
     </form>
   </div>
 
-  <!-- ═══════════ FLOATING BUTTONS ═══════════ -->
-  <button id="ai-toggle" class="fab" aria-label="Toggle AI assistant">
-    <span>🤖</span>
-  </button>
-  <button id="ar-toggle" class="fab fab-ar hidden" aria-label="View in AR">
-    <span>📱</span>
-  </button>
-  <button id="reset-camera" class="fab fab-reset" aria-label="Reset camera">
-    <span>🏠</span>
-  </button>
+  <!-- Scripts -->
 
   <script type="module" src="/src/main.js"></script>
 </body>

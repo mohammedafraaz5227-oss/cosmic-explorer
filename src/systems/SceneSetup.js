@@ -15,7 +15,7 @@ export class SceneSetup {
     // ── Renderer ──
     this.renderer = new THREE.WebGLRenderer({
       antialias: SCENE_CONFIG.antialias,
-      alpha: false,
+      alpha: true,
       powerPreference: 'high-performance',
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);

@@ -144,7 +144,7 @@ export class UIManager {
     const halfW = window.innerWidth / 2;
     const halfH = window.innerHeight / 2;
 
-    this.labels.forEach(({ element, planet }) => {
+    this.labels.forEach(({ element, planet }, index) => {
       // Get world position of the planet mesh
       const worldPos = new THREE.Vector3();
       planet.mesh.getWorldPosition(worldPos);
@@ -152,8 +152,20 @@ export class UIManager {
       // Project to screen
       const projected = worldPos.clone().project(this.camera);
 
-      // Check if behind camera
-      if (projected.z > 1) {
+      // Check if behind camera or way outside the screen bounds
+      if (
+        projected.z > 1 || projected.z < -1 ||
+        projected.x < -1.1 || projected.x > 1.1 ||
+        projected.y < -1.1 || projected.y > 1.1
+      ) {
+        element.style.display = 'none';
+        return;
+      }
+
+      const dist = worldPos.distanceTo(this.camera.position);
+      
+      // Strict distance culling for exoplanets to prevent ghosting
+      if (dist > 150) {
         element.style.display = 'none';
         return;
       }
@@ -161,15 +173,18 @@ export class UIManager {
       const x = (projected.x * halfW) + halfW;
       const y = -(projected.y * halfH) + halfH;
 
-      // Offset label above planet
-      const offsetY = -30;
+      // Stagger vertical offsets to prevent Mercury/Venus/Earth overlapping
+      // Cycle through varying offsets
+      const staggerOffsets = [0, 20, 40, 10, 30, 50, 5, 25, 45, 15, 35];
+      const stagger = staggerOffsets[index % staggerOffsets.length];
+      const offsetY = -20 - stagger;
+
       element.style.left = `${x}px`;
       element.style.top = `${y + offsetY}px`;
       element.style.display = 'block';
 
       // Fade based on distance
-      const dist = worldPos.distanceTo(this.camera.position);
-      const opacity = THREE.MathUtils.clamp(1 - dist / 200, 0.1, 0.9);
+      const opacity = THREE.MathUtils.clamp(1 - dist / 150, 0, 0.9);
       element.style.opacity = opacity;
     });
   }

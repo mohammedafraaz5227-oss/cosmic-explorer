@@ -135,8 +135,16 @@ body {
 .hud-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   padding: 2rem;
+  pointer-events: none;
+}
+
+.top-controls-container {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  pointer-events: auto; /* Re-enable clicks for the buttons inside */
 }
 
 .hud-logo {
@@ -217,8 +225,7 @@ body {
   color: var(--color-text-main);
   letter-spacing: 2px;
   text-transform: uppercase;
-  pointer-events: auto;
-  cursor: pointer;
+  pointer-events: none;
   transition: var(--transition-smooth);
   opacity: 0.7;
   transform: translate(-50%, -50%); /* Center on coordinate */
@@ -278,7 +285,10 @@ body {
 
 /* ═══════════ PLANET INFO PANEL ═══════════ */
 #planet-panel {
-  top: 15%;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+  height: max-content;
   right: 2rem;
   width: 380px;
   padding: 2rem;
@@ -512,7 +522,7 @@ body {
 
 /* ═══════════ FLOATING ACTION BUTTONS ═══════════ */
 .fab {
-  position: absolute;
+  position: relative;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -536,23 +546,35 @@ body {
   transform: translateY(-2px);
 }
 
-#ai-toggle {
-  bottom: 2rem;
-  left: 2rem;
-}
-
-#ar-toggle {
-  bottom: 2rem;
-  right: 6rem;
-}
-
-#reset-camera {
-  bottom: 2rem;
-  right: 2rem;
-}
-
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
 ::-webkit-scrollbar-thumb { background: var(--color-hud-border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+/* ═══════════ MOBILE RESPONSIVENESS ═══════════ */
+@media (max-width: 768px) {
+  .hud-top {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    align-items: center;
+  }
+  .hud-status {
+    display: none; /* Hide FPS on small screens to save space */
+  }
+  .top-controls-container {
+    gap: 0.8rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .fab {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+  .hud-logo-text {
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+}

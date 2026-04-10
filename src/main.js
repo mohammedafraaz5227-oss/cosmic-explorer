@@ -15,7 +15,7 @@ import { Raycaster } from './interaction/Raycaster.js';
 import { CameraController } from './interaction/CameraController.js';
 import { UIManager } from './ui/UIManager.js';
 import { AIChat } from './ui/AIChat.js';
-import { WebXRManager } from './systems/WebXRManager.js';
+import { WebcamAR } from './systems/WebcamAR.js';
 
 class CosmicExplorer {
   constructor() {
@@ -78,8 +78,8 @@ class CosmicExplorer {
     // ── AI Chat ──
     this.aiChat = new AIChat();
 
-    // ── WebXR (optional AR) ──
-    this.webXR = new WebXRManager(renderer, scene, camera);
+    // ── Webcam AR ──
+    this.webcamAR = new WebcamAR(renderer, scene, camera, this.starfield);
 
     // ── Reset camera button ──
     document.getElementById('reset-camera').addEventListener('click', () => {
